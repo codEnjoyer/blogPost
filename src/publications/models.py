@@ -11,12 +11,12 @@ class Publication(Base):
     __tablename__ = "publication"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
-    # author_id: Mapped[int] = mapped_column(Integer, ForeignKey("user.id"), nullable=False)
+    author_id: Mapped[int] = mapped_column(Integer, ForeignKey("user.id"), nullable=False)
     content: Mapped[str] = mapped_column(Text, nullable=False, default="Hello, World!")
     published_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=func.now())
     last_edit_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, onupdate=func.now())
 
-    # author = relationship("User", back_populates="publications", lazy="subquery")
+    author = relationship("User", back_populates="publications")
 
 
 class ReactionType(StrEnum):
@@ -29,7 +29,7 @@ class Reaction(Base):
 
     publication_id: Mapped[int] = mapped_column(Integer, ForeignKey("publication.id"), nullable=False, primary_key=True)
     type: Mapped[ReactionType] = mapped_column(Enum(ReactionType), nullable=False)
-    # author_id: Mapped[int] = mapped_column(Integer, ForeignKey("user.id"), nullable=False, primary_key=True)
+    author_id: Mapped[int] = mapped_column(Integer, ForeignKey("user.id"), nullable=False, primary_key=True)
 
     publication = relationship("Publication", back_populates="reaction")
-    # author = relationship("User", back_populates="reaction", lazy="subquery")
+    author = relationship("User", back_populates="reaction")
