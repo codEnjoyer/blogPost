@@ -1,13 +1,14 @@
 from datetime import datetime
+from enum import StrEnum
 
-from sqlalchemy import DateTime, func, Integer, ForeignKey, Text
+from sqlalchemy import DateTime, func, Integer, ForeignKey, Text, Enum
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from database import Base
 
 
 class Publication(Base):
-    __tablename__ = 'publication'
+    __tablename__ = "publication"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     # author_id: Mapped[int] = mapped_column(Integer, ForeignKey("user.id"), nullable=False)
@@ -15,4 +16,20 @@ class Publication(Base):
     published_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=func.now())
     last_edit_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, onupdate=func.now())
 
-    # user = relationship("User", back_populates="publications")
+    # author = relationship("User", back_populates="publications", lazy="subquery")
+
+
+class ReactionType(StrEnum):
+    like: str = "like"
+    dislike: str = "dislike"
+
+
+class Reaction(Base):
+    __tablename__ = "reaction"
+
+    publication_id: Mapped[int] = mapped_column(Integer, ForeignKey("publication.id"), nullable=False, primary_key=True)
+    type: Mapped[ReactionType] = mapped_column(Enum(ReactionType), nullable=False)
+    # author_id: Mapped[int] = mapped_column(Integer, ForeignKey("user.id"), nullable=False, primary_key=True)
+
+    publication = relationship("Publication", back_populates="reaction")
+    # author = relationship("User", back_populates="reaction", lazy="subquery")
