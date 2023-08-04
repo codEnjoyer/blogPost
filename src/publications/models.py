@@ -16,7 +16,8 @@ class Publication(Base):
     published_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=func.now())
     last_edit_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, onupdate=func.now())
 
-    author = relationship("User", back_populates="publications")
+    author: Mapped["User"] = relationship(back_populates="publications")
+    reactions: Mapped[list["Reaction"]] = relationship(back_populates="publication")
 
 
 class ReactionType(StrEnum):
@@ -31,5 +32,5 @@ class Reaction(Base):
     type: Mapped[ReactionType] = mapped_column(Enum(ReactionType), nullable=False)
     author_id: Mapped[int] = mapped_column(Integer, ForeignKey("user.id"), nullable=False, primary_key=True)
 
-    publication = relationship("Publication", back_populates="reaction")
-    author = relationship("User", back_populates="reaction")
+    author: Mapped["User"] = relationship(back_populates="reactions")
+    publication: Mapped[Publication] = relationship(back_populates="reactions")
