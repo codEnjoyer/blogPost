@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
 
-from auth.dependencies import get_current_user
+from auth.base_config import current_user
 
 router = APIRouter(prefix="/publications", tags=["Publications"])
 
@@ -11,20 +11,20 @@ async def get_publications():
 
 
 @router.post("/")
-async def create_publication(user=Depends(get_current_user)):
+async def create_publication(user=Depends(current_user)):
     pass
 
 
 @router.delete("/{publication_id}")
-async def delete_publication(publication_id: int, user=Depends(get_current_user)):
+async def delete_publication(publication_id: int, user=Depends(current_user)):
     pass
 
 
 @router.put("/{publication_id}")
-async def put_publication(publication_id: int, user=Depends(get_current_user)):
+async def put_publication(publication_id: int, user=Depends(current_user)):
     pass
 
 
 @router.patch("/{publication_id}")
-async def patch_publication(publication_id: int, user=Depends(get_current_user)):
+async def patch_publication(publication_id: int, user=Depends(current_user)):
     pass

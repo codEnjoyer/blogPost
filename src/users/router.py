@@ -1,6 +1,16 @@
-from fastapi import APIRouter
+from typing import Annotated
+
+from fastapi import APIRouter, Depends
+
+from auth.base_config import current_user
+from users.models import User
 
 router = APIRouter(prefix="/users", tags=["Users"])
+
+
+@router.get("/protected_route")
+async def protected_route(user: Annotated[User, Depends(current_user)]):
+    return f"This is a protected route, {user.username}"
 
 
 @router.get("/")
