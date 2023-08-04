@@ -6,7 +6,8 @@ from sqlalchemy import Integer, String, DateTime, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from database import Base
-from publications.models import Publication, Reaction
+from publications.models import Publication
+from reactions.models import Reaction
 
 
 class User(SQLAlchemyBaseUserTable[int], Base):
@@ -18,5 +19,5 @@ class User(SQLAlchemyBaseUserTable[int], Base):
     hashed_password: Mapped[str] = mapped_column(String, nullable=False)
     registered_at: Mapped[datetime] = mapped_column(DateTime, default=func.now())
 
-    publications: Mapped[list[Publication]] = relationship(back_populates="author")
-    reactions: Mapped[list[Reaction]] = relationship(back_populates="author")
+    publications: Mapped[list["Publication"]] = relationship(back_populates="author")
+    reactions: Mapped[list["Reaction"]] = relationship(back_populates="author")
