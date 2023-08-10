@@ -6,6 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from publications.models import Publication
 from reactions.models import Reaction
 from users.models import User
+from users.schemas import UserUpdate
 
 
 async def get_all_users(db: AsyncSession, limit: int = 10, offset: int = 0) -> Sequence[User]:
@@ -24,6 +25,33 @@ async def get_user_by_id(db: AsyncSession, user_id: int) -> User | None:
         result = await db.execute(query)
         user = result.scalar()
         return user
+    except Exception as e:
+        raise e
+
+
+async def update_user_by_id(db: AsyncSession,
+                            user_id: int,
+                            update_scheme: UserUpdate) -> User | None:
+    try:
+        db_user = await get_user_by_id(db, user_id)
+        if not db_user:
+            return None
+        for field, value in update_scheme:
+            if value:
+                setattr(db_user, field, value)
+        await db.commit()
+        await db.refresh(db_user)
+        return db_user
+    except Exception as e:
+        raise e
+
+
+async def delete_user_by_id(db: AsyncSession, user_id: int) -> User:
+    try:
+        db_user = await get_user_by_id(db, user_id)
+        await db.delete(db_user)
+        await db.commit()
+        return db_user
     except Exception as e:
         raise e
 

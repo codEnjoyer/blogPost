@@ -7,9 +7,11 @@ from auth.base_config import current_user
 from database import get_async_session
 from publications.schemas import Publication
 from reactions.schemas import Reaction
-from users.crud import get_all_users, get_user_by_id, get_all_user_publications, get_all_user_reactions
+from users.crud import (
+    get_all_users, get_user_by_id, get_all_user_publications, get_all_user_reactions,
+    update_user_by_id, delete_user_by_id)
 from users.models import User
-from users.schemas import UserRead
+from users.schemas import UserRead, UserUpdate
 
 router = APIRouter(prefix="/users", tags=["Users"])
 
@@ -55,3 +57,18 @@ async def get_user_reactions(db: Annotated[AsyncSession, Depends(get_async_sessi
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail="User was not found")
     return list(reactions)
+
+
+@router.patch("/me")
+async def update_current_user(db: Annotated[AsyncSession, Depends(get_async_session)],
+                              user: Annotated[User, Depends(current_user)],
+                              user_update: UserUpdate) -> UserRead:
+    user = await update_user_by_id(db, user.id, user_update)
+    return user
+
+
+@router.delete("/me")
+async def delete_current_user(db: Annotated[AsyncSession, Depends(get_async_session)],
+                              user: Annotated[User, Depends(current_user)]) -> UserRead:
+    user = await delete_user_by_id(db, user.id)
+    return user
