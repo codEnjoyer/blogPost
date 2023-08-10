@@ -1,9 +1,13 @@
 from typing import Annotated
 
 from fastapi import APIRouter, Depends
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from auth.base_config import current_user
+from database import get_async_session
+from users.crud import get_all_users
 from users.models import User
+from users.schemas import UserRead
 
 router = APIRouter(prefix="/users", tags=["Users"])
 
@@ -14,8 +18,11 @@ async def protected_route(user: Annotated[User, Depends(current_user)]):
 
 
 @router.get("/")
-async def get_users():
-    pass
+async def get_users(db: Annotated[AsyncSession, Depends(get_async_session)],
+                    limit: int = 10,
+                    offset: int = 0) -> list[UserRead]:
+    users = await get_all_users(db, limit, offset)
+    return list(users)
 
 
 @router.get("/{user_id}")
