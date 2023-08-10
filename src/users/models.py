@@ -19,5 +19,8 @@ class User(SQLAlchemyBaseUserTable[int], Base):
     hashed_password: Mapped[str] = mapped_column(String, nullable=False)
     registered_at: Mapped[datetime] = mapped_column(DateTime, default=func.now())
 
-    publications: Mapped[list["Publication"]] = relationship(back_populates="author")
-    reactions: Mapped[list["Reaction"]] = relationship(back_populates="author")
+    publications: Mapped[list["Publication"]] = relationship(back_populates="author", cascade="all, delete-orphan")
+    reactions: Mapped[list["Reaction"]] = relationship(back_populates="author", cascade="all, delete-orphan")
+
+    def __str__(self):
+        return str({k: v for k, v in self.__dict__.items() if not k.startswith("_")})
