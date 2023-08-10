@@ -1,20 +1,15 @@
 from datetime import datetime
 
-from fastapi_users.schemas import BaseUserCreate, BaseUserUpdate
+from fastapi_users.schemas import BaseUserCreate, BaseUserUpdate, BaseUser
 
 
-class BaseUser:
+class UserRead(BaseUser[int]):
+    registered_at: datetime
+
+
+class UserCreate(BaseUserCreate):
     username: str
 
 
-class UserRead(BaseUser):
-    registered_at: datetime
-    pass
-
-
-class UserCreate(BaseUser, BaseUserCreate):
-    pass
-
-
-class UserUpdate(BaseUser, BaseUserUpdate):
+class UserUpdate(BaseUserUpdate):
     username: str | None

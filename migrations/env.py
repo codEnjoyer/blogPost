@@ -31,7 +31,8 @@ if config.config_file_name is not None:
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
 
-from publications.models import Publication, Reaction
+from publications.models import Publication
+from reactions.models import Reaction
 from users.models import User
 from database import Base
 
