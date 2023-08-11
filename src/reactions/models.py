@@ -9,6 +9,7 @@ from database import Base
 class ReactionType(StrEnum):
     like: str = "like"
     dislike: str = "dislike"
+    none: str = "none"
 
 
 class Reaction(Base):
