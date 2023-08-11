@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from auth.base_config import current_user
 from database import get_async_session
 from publications.schemas import PublicationRead
-from reactions.schemas import Reaction
+from reactions.schemas import ReactionRead
 from users.crud import (
     get_all_users, get_user_by_id, get_all_user_publications, get_all_user_reactions,
     update_user_by_id, delete_user_by_id)
@@ -51,7 +51,7 @@ async def get_user_publications(db: Annotated[AsyncSession, Depends(get_async_se
 
 @router.get("/{user_id}/reactions")
 async def get_user_reactions(db: Annotated[AsyncSession, Depends(get_async_session)],
-                             user_id: int) -> list[Reaction]:
+                             user_id: int) -> list[ReactionRead]:
     reactions = await get_all_user_reactions(db, user_id)
     if not reactions:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
