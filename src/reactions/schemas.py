@@ -13,9 +13,4 @@ class ReactionRead(ReactionBase):
 
 
 class ReactionCreate(ReactionBase):
-    publication_id: int
-
-
-class ReactionUpdate(ReactionBase):
-    type: ReactionType | None = None
-    publication_id: int
+    pass

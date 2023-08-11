@@ -17,4 +17,4 @@ class Publication(Base):
 
     author: Mapped["User"] = relationship(back_populates="publications")
     reactions: Mapped[list["Reaction"]] = relationship(back_populates="publication", cascade="all, delete-orphan",
-                                                       lazy="joined")
+                                                       lazy="subquery")
