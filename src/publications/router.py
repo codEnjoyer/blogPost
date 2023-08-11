@@ -5,7 +5,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from auth.base_config import current_user
 from database import get_async_session
-from publications.crud import get_all_publications, get_publication_by_id, create_publication
+from publications.crud import get_all_publications, get_publication_by_id, create_publication, \
+    delete_publication_from_db
 from publications.schemas import PublicationRead, PublicationCreate, PublicationUpdate
 from users.models import User
 
@@ -39,8 +40,18 @@ async def post_publication(user: Annotated[User, Depends(current_user)],
 
 
 @router.delete("/{publication_id}")
-async def delete_publication(publication_id: int, user=Depends(current_user)):
-    pass
+async def delete_publication(publication_id: int,
+                             db: Annotated[AsyncSession, Depends(get_async_session)],
+                             user: Annotated[User, Depends(current_user)]) -> PublicationRead:
+    publication_to_delete = await get_publication_by_id(db, publication_id)
+    if not publication_to_delete:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail="Publication was not found")
+    if publication_to_delete.author_id != user.id:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
+                            detail="You are not the author of this publication")
+    deleted_publication = await delete_publication_from_db(db, publication_to_delete)
+    return deleted_publication
 
 
 @router.put("/{publication_id}")

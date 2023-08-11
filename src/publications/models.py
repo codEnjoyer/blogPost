@@ -16,4 +16,4 @@ class Publication(Base):
     last_edit_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=func.now(), onupdate=func.now())
 
     author: Mapped["User"] = relationship(back_populates="publications")
-    reactions: Mapped[list["Reaction"]] = relationship(back_populates="publication")
+    reactions: Mapped[list["Reaction"]] = relationship(back_populates="publication", cascade="all, delete-orphan")

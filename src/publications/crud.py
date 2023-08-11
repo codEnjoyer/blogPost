@@ -41,3 +41,14 @@ async def create_publication(db: AsyncSession,
     except Exception as e:
         await db.rollback()
         raise e
+
+
+async def delete_publication_from_db(db: AsyncSession,
+                                     publication: Publication) -> Publication:
+    try:
+        await db.delete(publication)
+        await db.commit()
+        return publication
+    except Exception as e:
+        await db.rollback()
+        raise e
