@@ -4,7 +4,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from publications.models import Publication
-from publications.schemas import PublicationCreate
+from publications.schemas import PublicationCreate, PublicationUpdate
 
 
 async def get_all_publications(db: AsyncSession,
@@ -48,6 +48,21 @@ async def delete_publication_from_db(db: AsyncSession,
     try:
         await db.delete(publication)
         await db.commit()
+        return publication
+    except Exception as e:
+        await db.rollback()
+        raise e
+
+
+async def update_publication(db: AsyncSession,
+                             publication: Publication,
+                             publication_update: PublicationUpdate) -> Publication:
+    try:
+        for field, value in publication_update.model_dump().items():
+            if value:
+                setattr(publication, field, value)
+        await db.commit()
+        await db.refresh(publication)
         return publication
     except Exception as e:
         await db.rollback()

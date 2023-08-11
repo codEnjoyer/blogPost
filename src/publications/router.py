@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from auth.base_config import current_user
 from database import get_async_session
 from publications.crud import get_all_publications, get_publication_by_id, create_publication, \
-    delete_publication_from_db
+    delete_publication_from_db, update_publication
 from publications.schemas import PublicationRead, PublicationCreate, PublicationUpdate
 from users.models import User
 
@@ -54,11 +54,18 @@ async def delete_publication(publication_id: int,
     return deleted_publication
 
 
-@router.put("/{publication_id}")
-async def put_publication(publication_id: int, user=Depends(current_user)):
-    pass
-
-
 @router.patch("/{publication_id}")
-async def patch_publication(publication_id: int, user=Depends(current_user)):
-    pass
+async def edit_publication(publication_id: int,
+                           publication: PublicationUpdate,
+                           db: Annotated[AsyncSession, Depends(get_async_session)],
+                           user: Annotated[User, Depends(current_user)]) -> PublicationRead:
+    publication_to_edit = await get_publication_by_id(db, publication_id)
+    if not publication_to_edit:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail="Publication was not found")
+    if publication_to_edit.author_id != user.id:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
+                            detail="You are not the author of this publication")
+    edited_publication = await update_publication(db, publication_to_edit, publication)
+    return edited_publication
+
