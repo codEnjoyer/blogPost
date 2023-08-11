@@ -13,7 +13,7 @@ class Publication(Base):
     author_id: Mapped[int] = mapped_column(Integer, ForeignKey("user.id"), nullable=False)
     content: Mapped[str] = mapped_column(Text, nullable=False, default="Hello, World!")
     published_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=func.now())
-    last_edit_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, onupdate=func.now())
+    last_edit_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=func.now(), onupdate=func.now())
 
     author: Mapped["User"] = relationship(back_populates="publications")
     reactions: Mapped[list["Reaction"]] = relationship(back_populates="publication")
