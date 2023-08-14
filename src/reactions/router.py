@@ -61,10 +61,10 @@ async def delete_reaction(publication_id: PathID,
 
 
 @router.patch("/{publication_id}/reaction")
-async def patch_reaction(publication_id: PathID,
-                         reaction: ReactionCreate,
-                         user: CurrentUser,
-                         db: AsyncDBSession) -> ReactionRead:
+async def change_reaction(publication_id: PathID,
+                          reaction: ReactionCreate,
+                          user: CurrentUser,
+                          db: AsyncDBSession) -> ReactionRead:
     publication = await get_publication_by_id(db, publication_id)
     if not publication:
         raise PublicationNotFoundException(publication_id=publication_id)
