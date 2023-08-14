@@ -11,10 +11,10 @@ router = APIRouter(prefix="/publications", tags=["Reactions"])
 
 
 @router.get("/{publication_id}/reactions")
-async def get_reactions(publication_id: PathID,
-                        db: AsyncDBSession,
-                        limit: QueryDBLimit = 20,
-                        offset: QueryDBOffset = 0) -> list[ReactionRead]:
+async def get_all_publication_reactions(publication_id: PathID,
+                                        db: AsyncDBSession,
+                                        limit: QueryDBLimit = 20,
+                                        offset: QueryDBOffset = 0) -> list[ReactionRead]:
     publication = await get_publication_by_id(db, publication_id)
     if not publication:
         raise PublicationNotFoundException(publication_id=publication_id)
@@ -23,9 +23,9 @@ async def get_reactions(publication_id: PathID,
 
 
 @router.get("/{publication_id}/reaction")
-async def get_my_reaction(publication_id: PathID,
-                          user: CurrentUser,
-                          db: AsyncDBSession) -> ReactionRead:
+async def get_my_reaction_to_publication(publication_id: PathID,
+                                         user: CurrentUser,
+                                         db: AsyncDBSession) -> ReactionRead:
     publication = await get_publication_by_id(db, publication_id)
     if not publication:
         raise PublicationNotFoundException(publication_id=publication_id)
@@ -33,7 +33,7 @@ async def get_my_reaction(publication_id: PathID,
     return reaction
 
 
-@router.post("/{publication_id}/reaction")
+@router.post("/{publication_id}/reaction", name="React to publication")
 async def post_reaction(publication_id: PathID,
                         reaction: ReactionCreate,
                         user: CurrentUser,

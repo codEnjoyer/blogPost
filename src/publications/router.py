@@ -10,7 +10,7 @@ from utils.types import AsyncDBSession, QueryDBLimit, QueryDBOffset, PathID, Cur
 router = APIRouter(prefix="/publications", tags=["Publications"])
 
 
-@router.get("/")
+@router.get("/", name="Get All Publications")
 async def get_publications(db: AsyncDBSession,
                            limit: QueryDBLimit = 20,
                            offset: QueryDBOffset = 0) -> list[PublicationRead]:
