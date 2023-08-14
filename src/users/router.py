@@ -8,21 +8,21 @@ from users.crud import (
     get_all_users, get_user_by_id, get_all_user_publications, get_all_user_reactions,
     update_user_by_id, delete_user_by_id)
 from users.schemas import UserRead, UserUpdate
-from utils.types import AsyncDBSession, UserID, CurrentUser
+from utils.types import AsyncDBSession, PathID, CurrentUser, QueryDBLimit, QueryDBOffset
 
 router = APIRouter(prefix="/users", tags=["Users"])
 
 
 @router.get("/")
 async def get_users(db: AsyncDBSession,
-                    limit: Annotated[int, Query(ge=0, le=10 ** 3)] = 10,
-                    offset: Annotated[int, Query(ge=0, le=10 ** 6)] = 0) -> list[UserRead]:
+                    limit: QueryDBLimit = 10,
+                    offset: QueryDBOffset = 0) -> list[UserRead]:
     users = await get_all_users(db, limit, offset)
     return list(users)
 
 
 @router.get("/{user_id}")
-async def get_user(user_id: UserID,
+async def get_user(user_id: PathID,
                    db: AsyncDBSession) -> UserRead:
     user = await get_user_by_id(db, user_id)
     if not user:
@@ -33,7 +33,7 @@ async def get_user(user_id: UserID,
 
 @router.get("/{user_id}/publications")
 async def get_user_publications(db: AsyncDBSession,
-                                user_id: UserID) -> list[PublicationRead]:
+                                user_id: PathID) -> list[PublicationRead]:
     publications = await get_all_user_publications(db, user_id)
     if not publications:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,

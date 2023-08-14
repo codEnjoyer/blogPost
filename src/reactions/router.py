@@ -1,24 +1,18 @@
-from typing import Annotated
-
-from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.ext.asyncio import AsyncSession
-
-from auth.base_config import current_user
-from database import get_async_session
+from fastapi import APIRouter, HTTPException, status
 from publications.crud import get_publication_by_id
 from reactions.crud import (get_all_reactions, get_user_reaction_to_publication,
                             create_reaction, delete_reaction_from_db, update_reaction)
 from reactions.schemas import ReactionRead, ReactionCreate
-from users.models import User
+from utils.types import AsyncDBSession, QueryDBLimit, QueryDBOffset, PathID, CurrentUser
 
 router = APIRouter(prefix="/publications", tags=["Reactions"])
 
 
 @router.get("/{publication_id}/reactions")
-async def get_reactions(publication_id: int,
-                        db: Annotated[AsyncSession, Depends(get_async_session)],
-                        limit: int = 20,
-                        offset: int = 0) -> list[ReactionRead]:
+async def get_reactions(publication_id: PathID,
+                        db: AsyncDBSession,
+                        limit: QueryDBLimit = 20,
+                        offset: QueryDBOffset = 0) -> list[ReactionRead]:
     publication = await get_publication_by_id(db, publication_id)
     if not publication:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
@@ -31,9 +25,9 @@ async def get_reactions(publication_id: int,
 
 
 @router.get("/{publication_id}/reaction")
-async def get_my_reaction(publication_id: int,
-                          user: Annotated[User, Depends(current_user)],
-                          db: Annotated[AsyncSession, Depends(get_async_session)]) -> ReactionRead:
+async def get_my_reaction(publication_id: PathID,
+                          user: CurrentUser,
+                          db: AsyncDBSession) -> ReactionRead:
     publication = await get_publication_by_id(db, publication_id)
     if not publication:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
@@ -43,10 +37,10 @@ async def get_my_reaction(publication_id: int,
 
 
 @router.post("/{publication_id}/reaction")
-async def post_reaction(publication_id: int,
+async def post_reaction(publication_id: PathID,
                         reaction: ReactionCreate,
-                        user: Annotated[User, Depends(current_user)],
-                        db: Annotated[AsyncSession, Depends(get_async_session)]) -> ReactionRead:
+                        user: CurrentUser,
+                        db: AsyncDBSession) -> ReactionRead:
     publication = await get_publication_by_id(db, publication_id)
     if not publication:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
@@ -56,9 +50,9 @@ async def post_reaction(publication_id: int,
 
 
 @router.delete("/{publication_id}/reaction")
-async def delete_reaction(publication_id: int,
-                          user: Annotated[User, Depends(current_user)],
-                          db: Annotated[AsyncSession, Depends(get_async_session)]) -> ReactionRead:
+async def delete_reaction(publication_id: PathID,
+                          user: CurrentUser,
+                          db: AsyncDBSession) -> ReactionRead:
     publication = await get_publication_by_id(db, publication_id)
     if not publication:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
@@ -71,10 +65,10 @@ async def delete_reaction(publication_id: int,
 
 
 @router.patch("/{publication_id}/reaction")
-async def patch_reaction(publication_id: int,
+async def patch_reaction(publication_id: PathID,
                          reaction: ReactionCreate,
-                         user: Annotated[User, Depends(current_user)],
-                         db: Annotated[AsyncSession, Depends(get_async_session)]) -> ReactionRead:
+                         user: CurrentUser,
+                         db: AsyncDBSession) -> ReactionRead:
     publication = await get_publication_by_id(db, publication_id)
     if not publication:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
