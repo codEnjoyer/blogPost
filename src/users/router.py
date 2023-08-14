@@ -43,7 +43,7 @@ async def get_user_publications(db: AsyncDBSession,
 
 @router.get("/{user_id}/reactions")
 async def get_user_reactions(db: AsyncDBSession,
-                             user_id: int) -> list[ReactionRead]:
+                             user_id: PathID) -> list[ReactionRead]:
     reactions = await get_all_user_reactions(db, user_id)
     if not reactions:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
