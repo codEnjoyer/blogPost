@@ -17,5 +17,5 @@ class UserCreate(BaseUserCreate, CustomUser):
     pass
 
 
-class UserUpdate(BaseUserUpdate):
+class UserUpdate(BaseUserUpdate, CustomUser):
     username: Annotated[str | None, Field(min_length=3, max_length=50, default=None)]
