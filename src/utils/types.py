@@ -7,7 +7,7 @@ from auth.base_config import current_user
 from database import get_async_session
 from users.models import User
 
-PathID = Annotated[int, Path(gt=0, lt=2 ** 31)]
+PathID = Annotated[int, Path(ge=1, le=2 ** 31 - 1)]
 CurrentUser = Annotated[User, Depends(current_user)]
 
 AsyncDBSession = Annotated[AsyncSession, Depends(get_async_session)]
