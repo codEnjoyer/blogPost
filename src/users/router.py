@@ -31,7 +31,7 @@ async def get_user(user_id: PathID,
     return user
 
 
-@router.get("/{user_id}/publications")
+@router.get("/{user_id}/publications", tags=["Publications"])
 async def get_user_publications(db: AsyncDBSession,
                                 user_id: PathID) -> list[PublicationRead]:
     publications = await get_all_user_publications(db, user_id)
@@ -41,7 +41,7 @@ async def get_user_publications(db: AsyncDBSession,
     return list(publications)
 
 
-@router.get("/{user_id}/reactions")
+@router.get("/{user_id}/reactions", tags=["Reactions"])
 async def get_user_reactions(db: AsyncDBSession,
                              user_id: PathID) -> list[ReactionRead]:
     reactions = await get_all_user_reactions(db, user_id)
