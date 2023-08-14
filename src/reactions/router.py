@@ -42,6 +42,9 @@ async def post_reaction(publication_id: PathID,
                         user: CurrentUser,
                         db: AsyncDBSession) -> ReactionRead:
     publication = await get_publication_by_id(db, publication_id)
+    if publication.id == user.id:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                            detail="You can't react to your own publication")
     if not publication:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail="Publication was not found")
