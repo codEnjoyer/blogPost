@@ -1,14 +1,16 @@
 from datetime import datetime
+from typing import Annotated
 
 from fastapi_users.schemas import BaseUserCreate, BaseUserUpdate, BaseUser
+from pydantic import Field
 
 
 class CustomUser:
-    username: str
+    username: Annotated[str, Field(min_length=3, max_length=50)]
 
 
 class UserRead(BaseUser[int], CustomUser):
-    registered_at: datetime
+    registered_at: Annotated[datetime, Field(default_factory=datetime.now)]
 
 
 class UserCreate(BaseUserCreate, CustomUser):
@@ -16,4 +18,4 @@ class UserCreate(BaseUserCreate, CustomUser):
 
 
 class UserUpdate(BaseUserUpdate):
-    username: str | None = None
+    username: Annotated[str | None, Field(min_length=3, max_length=50, default=None)]
