@@ -1,9 +1,11 @@
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter
 from publications.crud import get_publication_by_id
 from reactions.crud import (get_all_reactions, get_user_reaction_to_publication,
                             create_reaction, delete_reaction_from_db, update_reaction)
+from reactions.exceptions import ReactionNotFoundException
 from reactions.schemas import ReactionRead, ReactionCreate
 from utils.types import AsyncDBSession, QueryDBLimit, QueryDBOffset, PathID, CurrentUser
+from publications.exceptions import PublicationNotFoundException, SelfReactionException
 
 router = APIRouter(prefix="/publications", tags=["Reactions"])
 
@@ -15,12 +17,8 @@ async def get_reactions(publication_id: PathID,
                         offset: QueryDBOffset = 0) -> list[ReactionRead]:
     publication = await get_publication_by_id(db, publication_id)
     if not publication:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                            detail="Publication was not found")
+        raise PublicationNotFoundException(publication_id=publication_id)
     reactions = await get_all_reactions(publication, limit, offset)
-    if not reactions:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                            detail="Reactions was not found")
     return list(reactions)
 
 
@@ -30,8 +28,7 @@ async def get_my_reaction(publication_id: PathID,
                           db: AsyncDBSession) -> ReactionRead:
     publication = await get_publication_by_id(db, publication_id)
     if not publication:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                            detail="Publication was not found")
+        raise PublicationNotFoundException(publication_id=publication_id)
     reaction = await get_user_reaction_to_publication(publication, user.id)
     return reaction
 
@@ -43,11 +40,9 @@ async def post_reaction(publication_id: PathID,
                         db: AsyncDBSession) -> ReactionRead:
     publication = await get_publication_by_id(db, publication_id)
     if publication.id == user.id:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-                            detail="You can't react to your own publication")
+        raise SelfReactionException()
     if not publication:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                            detail="Publication was not found")
+        raise PublicationNotFoundException(publication_id=publication_id)
     reaction_to_create = await create_reaction(db, publication, reaction, user.id)
     return reaction_to_create
 
@@ -58,12 +53,10 @@ async def delete_reaction(publication_id: PathID,
                           db: AsyncDBSession) -> ReactionRead:
     publication = await get_publication_by_id(db, publication_id)
     if not publication:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                            detail="Publication was not found")
+        raise PublicationNotFoundException(publication_id=publication_id)
     deleted_reaction = await delete_reaction_from_db(db, publication, user.id)
     if not deleted_reaction:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                            detail="Reaction was not found")
+        raise ReactionNotFoundException()
     return deleted_reaction
 
 
@@ -74,11 +67,9 @@ async def patch_reaction(publication_id: PathID,
                          db: AsyncDBSession) -> ReactionRead:
     publication = await get_publication_by_id(db, publication_id)
     if not publication:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                            detail="Publication was not found")
+        raise PublicationNotFoundException(publication_id=publication_id)
     reaction_to_update = await get_user_reaction_to_publication(publication, user.id)
     if not reaction_to_update:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                            detail="Reaction was not found")
+        raise ReactionNotFoundException()
     updated_reaction = await update_reaction(db, reaction_to_update, reaction)
     return updated_reaction
