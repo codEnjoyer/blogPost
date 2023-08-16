@@ -6,28 +6,45 @@
 
 ```shell
 git clone https://github.com/codenjoyer/blogpost.git
+cd blogpost
 ```
 
 2. Создайте виртуальное окружение и активируйте его
 
 ```shell
 python -m venv venv
-source venv/bin/activate
+cd venv/Scripts
+activate
 ```
 
-3. Установите зависимости
+3. Перейдите в папку проекта
+
+```shell
+cd ../..
+```
+
+4. Установите зависимости
 
 ```shell
 pip install -r requirements.txt
 ```
 
-4. Запустите миграции
+5. **Создайте** файл .env и заполните по примеру файла dev.env
+
+
+6. Перейдите в папку src
+
+```shell
+cd src
+```
+
+7. Проведите миграции
 
 ```shell
 alembic upgrade head
 ```
 
-5. Запустите приложение
+8. Запустите приложение
 
 ```shell
 uvicorn main:app --reload

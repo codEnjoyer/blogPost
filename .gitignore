@@ -20,7 +20,8 @@ site_build
 venv
 docs.zip
 archive.zip
-/db.sqlite3
+*/db.sqlite3
+/src/db.sqlite3
 
 # vim temporary files
 *~
