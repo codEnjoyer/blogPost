@@ -55,6 +55,12 @@ uvicorn main:app --reload
 Небольшое приложение, социальная сеть, с базовой реализацией REST API. Есть авторизация, возможность создания
 публикаций и реагирования на них.
 
+![img.png](images/img.png)
+
+![img_1.png](images/img_1.png)
+
+![img_2.png](images/img_2.png)
+
 ## Технологии
 
 - Python 3.11
