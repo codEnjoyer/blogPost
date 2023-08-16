@@ -12,6 +12,15 @@ def _register_routers(*routers) -> None:
 
 
 app = FastAPI(title="BlogPost")
+
+
+@app.get("/")
+async def root():
+    return {"message": "Hello World!\n"
+                       "This is a simple blog post application.\n"
+                       "You can find the documentation at /docs"}
+
+
 _register_routers(
     auth_router,
     users_router,
