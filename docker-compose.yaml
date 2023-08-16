@@ -1,0 +1,13 @@
+version: "3.8"
+services:
+  backend:
+    container_name: blogPost
+    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    env_file:
+      - .env
+    command: [ "sh", "start.sh" ]
+    ports:
+      - "8000:8000"
