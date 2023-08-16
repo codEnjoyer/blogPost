@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from starlette.responses import PlainTextResponse
 
 from auth.router import router as auth_router
 from publications.router import router as publications_router
@@ -14,11 +15,11 @@ def _register_routers(*routers) -> None:
 app = FastAPI(title="BlogPost")
 
 
-@app.get("/")
+@app.get("/", tags=["Root"])
 async def root():
-    return {"message": "Hello World!\n"
-                       "This is a simple blog post application.\n"
-                       "You can find the documentation at /docs"}
+    return PlainTextResponse(content="Hello World!\n"
+                                     "This is a simple blog post application.\n"
+                                     "You can find the documentation at /docs")
 
 
 _register_routers(
